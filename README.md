@@ -3,7 +3,6 @@
 An interactive, single-file web calculator for buying a home in the Netherlands. Everything runs in the browser — no server, no tracking, no dependencies to install.
 
 **Live demo:** `https://mahdi-mhi.github.io/hypotheek-calculator/`
-*(replace `USERNAME` with your GitHub username after enabling Pages)*
 
 The interface is in **Persian (Farsi)**, with the Dutch financial terms shown alongside so users learn the local vocabulary (`hypotheek`, `annuïteit`, `hypotheekrenteaftrek`, `overwaarde`, and so on).
 
