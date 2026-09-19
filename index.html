@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محاسبه‌گر وام مسکن هلند</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF1F2; --surface:#FFFFFF; --surface-2:#F5F7F7;
+    --ink:#13272B; --muted:#5C6F73; --line:#DCE3E3;
+    --primary:#0E5F58; --primary-soft:#DCEBE8; --primary-ink:#0A423E;
+    --accent:#B37A16; --accent-soft:#F6ECD6;
+    --debt:#8A4A3B; --good:#0E7A4B; --good-soft:#DBEEE3; --bad:#B23B2E; --bad-soft:#F6E0DC;
+    --shadow:0 1px 2px rgba(19,39,43,.06),0 8px 24px rgba(19,39,43,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0D1618; --surface:#152225; --surface-2:#1B2B2E;
+      --ink:#E7EEEE; --muted:#9BB0B2; --line:#2A3A3D;
+      --primary:#4FB3A6; --primary-soft:#173630; --primary-ink:#BfE7E0;
+      --accent:#E0AA4A; --accent-soft:#332811;
+      --debt:#D89685; --good:#5CC08A; --good-soft:#12331F; --bad:#E58374; --bad-soft:#331512;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D1618; --surface:#152225; --surface-2:#1B2B2E;
+    --ink:#E7EEEE; --muted:#9BB0B2; --line:#2A3A3D;
+    --primary:#4FB3A6; --primary-soft:#173630; --primary-ink:#BfE7E0;
+    --accent:#E0AA4A; --accent-soft:#332811;
+    --debt:#D89685; --good:#5CC08A; --good-soft:#12331F; --bad:#E58374; --bad-soft:#331512;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Vazirmatn',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 64px}
+  header{margin:8px 4px 22px}
+  h1{font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em}
+  header p{margin:0;color:var(--muted);font-size:13.5px}
+  .nl{font-family:system-ui,sans-serif;direction:ltr;unicode-bidi:isolate;font-weight:500}
+  .section-title{font-size:16px;font-weight:700;margin:26px 4px 12px;display:flex;align-items:center;gap:8px}
+  .section-title .em{font-size:18px}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+  .controls{padding:18px 16px;margin-bottom:18px}
+  .ctrl+.ctrl{margin-top:16px}
+  .ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:var(--muted);margin-bottom:7px;gap:8px}
+  .ctrl .val{font-weight:600;color:var(--ink);font-size:15px;font-family:system-ui,sans-serif;direction:ltr;white-space:nowrap}
+  input[type=range]{width:100%;accent-color:var(--primary);height:22px;cursor:pointer}
+  .hint{font-size:11.5px;color:var(--muted);margin:-8px 2px 0;line-height:1.7}
+  .seg{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:500;padding:9px 6px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s}
+  .seg button.on{background:var(--primary);color:#fff;box-shadow:0 1px 3px rgba(14,95,88,.35)}
+
+  .summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 15px;box-shadow:var(--shadow)}
+  .stat.wide{grid-column:1 / -1}
+  .stat .k{font-size:12.5px;color:var(--muted);margin-bottom:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .stat .v{font-size:22px;font-weight:700;font-family:system-ui,sans-serif;direction:ltr;text-align:right;letter-spacing:-.02em}
+  .stat.accent .v{color:var(--accent)}
+  .stat.primary{background:var(--primary-soft);border-color:transparent}
+  .stat.primary .v{color:var(--primary-ink)}
+  .pill{font-size:10.5px;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:20px;font-family:system-ui,sans-serif;direction:ltr;font-weight:600}
+  .pill.tl{background:var(--primary-soft);color:var(--primary)}
+
+  .tablecard{padding:6px 0 8px;overflow:hidden}
+  .thead{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 6px}
+  .thead h2{font-size:15px;margin:0;font-weight:600}
+  .view-toggle{display:flex;gap:4px}
+  .view-toggle button{border:1px solid var(--line);background:var(--surface);color:var(--muted);font-family:inherit;font-size:12px;padding:5px 11px;border-radius:20px;cursor:pointer}
+  .view-toggle button.on{background:var(--primary);color:#fff;border-color:transparent}
+  .scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+  th,td{padding:9px 10px;text-align:center;white-space:nowrap;font-family:system-ui,sans-serif;direction:ltr}
+  th{color:var(--muted);font-weight:500;font-size:11.5px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);font-family:'Vazirmatn',sans-serif}
+  td:first-child,th:first-child{color:var(--muted)}
+  tbody tr:nth-child(even){background:var(--surface-2)}
+  td.rente{color:var(--debt)}
+  td.aflos{color:var(--primary)}
+  td.tax{color:var(--accent);font-weight:600}
+  .note{font-size:12px;color:var(--muted);padding:12px 16px 2px;line-height:1.8}
+
+  .verdict{grid-column:1 / -1;border-radius:14px;padding:15px 16px;font-size:14px;line-height:1.7}
+  .verdict.good{background:var(--good-soft);color:var(--good)}
+  .verdict.bad{background:var(--bad-soft);color:var(--bad)}
+  .verdict b{font-size:19px;font-family:system-ui,sans-serif;direction:ltr}
+  .stat .v.good{color:var(--good)} .stat .v.bad{color:var(--bad)}
+
+  @keyframes flashpulse{0%{outline-color:var(--accent)}100%{outline-color:transparent}}
+  .stat.flash,.verdict.flash{outline:2px solid transparent;outline-offset:-2px;border-radius:14px;animation:flashpulse .8s ease}
+  .foot{margin-top:22px;font-size:11.5px;color:var(--muted);line-height:1.9;padding:0 6px}
+  .foot b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>محاسبه‌گر وام مسکن هلند 🏠</h1>
+    <p>قسط ماهانه، تفکیک بهره و اصل، برگشتی مالیات <span class="nl">(hypotheekrenteaftrek)</span>، و تحلیل «خرید یا اجاره؟» برای فروش بعد از چند سال. همه‌ی اعداد را با اسلایدرها تنظیم کنید.</p>
+  </header>
+
+  <div class="card controls">
+    <div class="ctrl">
+      <label>مبلغ وام / قیمت خانه <span class="nl">(hypotheekbedrag)</span><span class="val" id="lblLoan">€ 475.000</span></label>
+      <input type="range" id="loan" min="150000" max="700000" step="5000" value="475000">
+    </div>
+    <div class="ctrl">
+      <label>نرخ بهره سالانه <span class="nl">(rente)</span><span class="val" id="lblRate">3.78%</span></label>
+      <input type="range" id="rate" min="2" max="6" step="0.01" value="3.78">
+    </div>
+    <div class="hint">تنظیم روی <b>۱۰ سال ثابت = ۳٫۷۸٪</b> (سپتامبر ۲۰۲۶). مدت وام ۳۰ سال می‌ماند؛ نرخ فقط ۱۰ سال قفل است، بعد <span class="nl">rente-herziening</span>. نرخ‌های امروز: ۵ سال ۳٫۷۰٪ · ۱۰ سال ۳٫۷۸٪ · ۲۰ سال ۴٫۲۳٪ · ۳۰ سال ۴٫۲۹٪.</div>
+    <div class="ctrl">
+      <label>مدت وام <span class="nl">(looptijd)</span><span class="val" id="lblTerm">۳۰ سال</span></label>
+      <input type="range" id="term" min="10" max="30" step="1" value="30">
+    </div>
+    <div class="ctrl">
+      <label>ارزش رسمی خانه <span class="nl">(WOZ)</span> — برای <span class="nl">eigenwoningforfait</span><span class="val" id="lblWoz">€ 500.000</span></label>
+      <input type="range" id="woz" min="150000" max="800000" step="10000" value="500000">
+    </div>
+    <div class="ctrl">
+      <label>نوع وام <span class="nl">(hypotheekvorm)</span></label>
+      <div class="seg" id="typeSeg">
+        <button data-t="annu" class="on">سالیانه ثابت <span class="nl">annuïteit</span></button>
+        <button data-t="lin">خطی <span class="nl">lineair</span></button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>نرخ کسر مالیات <span class="nl">(aftrektarief 2026)</span></label>
+      <div class="seg" id="taxSeg">
+        <button data-a="0.3575">پله ۱ · ۳۵٫۷۵٪</button>
+        <button data-a="0.3756" class="on">پله ۲/سقف · ۳۷٫۵۶٪</button>
+      </div>
+    </div>
+    <div class="hint">اگر درآمد سالانه‌تان زیر ~۳۸٬۴۰۰ € است پله ۱ را بزنید؛ بالاتر از آن (تا سقف) پله ۲. درآمدهای بالا هم بیشتر از ۳۷٫۵۶٪ پس نمی‌گیرند.</div>
+  </div>
+
+  <div class="summary">
+    <div class="stat primary">
+      <div class="k">قسط ماه اول <span class="nl">(maandlast)</span></div>
+      <div class="v" id="sMaand">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">قسط ماه آخر</div>
+      <div class="v" id="sLast">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">کل بهره پرداختی <span class="nl">(rente)</span></div>
+      <div class="v" id="sInt">–</div>
+    </div>
+    <div class="stat accent">
+      <div class="k">کل برگشتی از مالیات <span class="pill" id="taxPill">37.56%</span></div>
+      <div class="v" id="sTax">–</div>
+    </div>
+  </div>
+
+  <div class="card tablecard">
+    <div class="thead">
+      <h2>جدول بازپرداخت</h2>
+      <div class="view-toggle" id="viewSeg">
+        <button data-v="year" class="on">سالانه</button>
+        <button data-v="month">۱۲ ماه اول</button>
+      </div>
+    </div>
+    <div class="scroll">
+      <table id="tbl"><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+    </div>
+    <div class="note" id="tnote"></div>
+  </div>
+
+  <!-- ===== SELL SCENARIO ===== -->
+  <div class="section-title"><span class="em">🔑</span> فروش بعد از چند سال — آیا به‌صرفه است؟</div>
+
+  <div class="card controls">
+    <div class="ctrl">
+      <label>افق فروش <span class="nl">(verkoop na)</span><span class="val" id="lblHz">۵ سال</span></label>
+      <input type="range" id="hz" min="1" max="15" step="1" value="5">
+    </div>
+    <div class="ctrl">
+      <label>رشد سالانه قیمت خانه <span class="nl">(waardegroei)</span><span class="val" id="lblGrow">3.5%</span></label>
+      <input type="range" id="grow" min="-5" max="8" step="0.5" value="3.5">
+    </div>
+    <div class="hint">مرجع: دلفت ۵ سال گذشته ~۵٪/سال · پیش‌بینی Rabobank برای ۲۰۲۶–۲۰۲۷ حدود ۲ تا ۴٪/سال.</div>
+    <div class="ctrl">
+      <label>اجاره‌ی معادل ماهانه <span class="nl">(huur)</span> — برای مقایسه<span class="val" id="lblRent">€ 2.000</span></label>
+      <input type="range" id="rent" min="1000" max="4000" step="50" value="2000">
+    </div>
+    <div class="ctrl">
+      <label>پول اولیه <span class="nl">(kosten koper)</span><span class="val" id="lblKk">€ 16.000</span></label>
+      <input type="range" id="kk" min="0" max="40000" step="500" value="16000">
+    </div>
+    <div class="hint">با معافیت خریدار زیر ۳۵ سال <span class="nl">(startersvrijstelling)</span> حدود ۹٬۵۰۰ € کمتر می‌شود (بدون ۲٪ overdrachtsbelasting).</div>
+    <div class="ctrl">
+      <label>هزینه ماهانه‌ی مالک <span class="nl">(onderhoud + OZB + verzekering)</span><span class="val" id="lblOwn">€ 250</span></label>
+      <input type="range" id="own" min="0" max="600" step="25" value="250">
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="stat">
+      <div class="k">قیمت فروش <span class="nl">(verkoopprijs)</span></div>
+      <div class="v" id="oSale">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">بدهی باقی‌مانده <span class="nl">(restschuld)</span></div>
+      <div class="v" id="oRest">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">سود خالص فروش <span class="nl">(overwaarde)</span></div>
+      <div class="v" id="oOver">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">اصل پس‌اندازشده <span class="nl">(aflossing)</span></div>
+      <div class="v" id="oAflos">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">هزینه‌ی واقعی خرید (کل دوره)</div>
+      <div class="v" id="oCostBuy">–</div>
+    </div>
+    <div class="stat">
+      <div class="k">هزینه‌ی اجاره (کل دوره)</div>
+      <div class="v" id="oCostRent">–</div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <div class="foot">
+    <p><b>هزینه‌ی واقعی خرید</b> = (پول اولیه + کل اقساط + هزینه‌های مالک) − (برگشتی مالیات + سود فروش). <b>اجاره</b> با فرض افزایش ۳٪ در سال و بدون هیچ سرمایه‌سازی حساب شده.</p>
+    <p><b>فرض‌ها:</b> تأمین مالی ۱۰۰٪ (قیمت خانه = مبلغ وام)، هزینه‌ی فروش ~۱٫۳٪ (makelaar). نرخ بهره در کل دوره ثابت فرض شده؛ در واقعیت بعد از دوره‌ی ثابت تغییر می‌کند.</p>
+    <p><b>ریسک:</b> اگر قیمت خانه افت کند، سود فروش منفی و ممکن است بعد از فروش بدهکار بمانید <span class="nl">(restschuld)</span>. <span class="nl">NHG</span> فقط در فروش اجباری آن را می‌بخشد.</p>
+    <p>ابزار آموزشی و تخمینی است؛ برای تصمیم نهایی با <span class="nl">hypotheekadviseur</span> و <span class="nl">makelaar</span> محلی مشورت کنید.</p>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const eur=n=>(n<0?'−€ ':'€ ')+Math.round(Math.abs(n)).toLocaleString('nl-NL');
+const faDigit=s=>String(s).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+let AFTREK=0.3756;
+const EWF_RATE=0.0035, SELL_PCT=0.013, RENT_GROW=0.03;
+let type='annu', view='year', initial=true;
+function setVal(id,text){
+  const el=$(id);
+  if(el.getAttribute('data-p')===text) return;
+  el.setAttribute('data-p',text); el.textContent=text;
+  if(initial) return;
+  const c=el.closest('.stat'); if(c){c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');}
+}
+
+function schedule(P,annual,years){
+  const r=annual/100/12, n=years*12, rows=[]; let bal=P;
+  if(type==='annu'){
+    const M=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+    for(let m=1;m<=n;m++){const i=bal*r,pr=M-i;bal-=pr;rows.push({pay:M,int:i,prin:pr,bal:Math.max(0,bal)});}
+  }else{
+    const pr=P/n;
+    for(let m=1;m<=n;m++){const i=bal*r,pay=pr+i;bal-=pr;rows.push({pay,int:i,prin:pr,bal:Math.max(0,bal)});}
+  }
+  return rows;
+}
+
+function render(){
+  const P=+$('loan').value, annual=+$('rate').value, years=+$('term').value, woz=+$('woz').value;
+  $('lblLoan').textContent=eur(P);
+  $('lblRate').textContent=annual.toFixed(2)+'%';
+  $('lblTerm').textContent=faDigit(years)+' سال';
+  $('lblWoz').textContent=eur(woz);
+
+  const rows=schedule(P,annual,years);
+  const ewf=woz*EWF_RATE;
+  const totalInt=rows.reduce((s,x)=>s+x.int,0);
+  setVal('sMaand',eur(rows[0].pay));
+  setVal('sLast',eur(rows[rows.length-1].pay));
+  setVal('sInt',eur(totalInt));
+  let totalNetTax=0;
+  for(let y=1;y<=years;y++){
+    const seg=rows.slice((y-1)*12,y*12);
+    totalNetTax+=Math.max(0,seg.reduce((s,x)=>s+x.int,0)-ewf)*AFTREK;
+  }
+  setVal('sTax',eur(totalNetTax));
+  $('taxPill').textContent=(AFTREK*100).toFixed(2)+'%';
+
+  // payment table
+  const th=$('thead'), tb=$('tbody');
+  if(view==='month'){
+    th.innerHTML='<tr><th>ماه</th><th>قسط</th><th>بهره</th><th>اصل</th><th>باقی‌مانده</th><th>برگشتی مالیات</th></tr>';
+    tb.innerHTML=rows.slice(0,12).map((x,idx)=>
+      `<tr><td>${idx+1}</td><td>${eur(x.pay)}</td><td class="rente">${eur(x.int)}</td><td class="aflos">${eur(x.prin)}</td><td>${eur(x.bal)}</td><td class="tax">${eur(x.int*AFTREK)}</td></tr>`).join('');
+    $('tnote').innerHTML='«برگشتی مالیات» اینجا ناخالص است (بهره × '+(AFTREK*100).toFixed(2)+'٪). عدد خالص سالانه کمی کمتر است.';
+  }else{
+    th.innerHTML='<tr><th>سال</th><th>بهره سال</th><th>اصل سال</th><th>باقی‌مانده</th><th>برگشتی ناخالص</th><th>برگشتی خالص</th></tr>';
+    let html='';
+    for(let y=1;y<=years;y++){
+      const seg=rows.slice((y-1)*12,y*12);
+      const yi=seg.reduce((s,x)=>s+x.int,0), yp=seg.reduce((s,x)=>s+x.prin,0);
+      html+=`<tr><td>${y}</td><td class="rente">${eur(yi)}</td><td class="aflos">${eur(yp)}</td><td>${eur(seg[seg.length-1].bal)}</td><td>${eur(yi*AFTREK)}</td><td class="tax">${eur(Math.max(0,yi-ewf)*AFTREK)}</td></tr>`;
+    }
+    tb.innerHTML=html;
+    $('tnote').innerHTML='«برگشتی خالص» = (بهره سال − eigenwoningforfait) × '+(AFTREK*100).toFixed(2)+'٪. با کم‌شدن بهره، برگشتی مالیات هم کم می‌شود.';
+  }
+
+  // ===== sell scenario =====
+  let hz=+$('hz').value; if(hz>years) hz=years;
+  const grow=+$('grow').value/100, rent=+$('rent').value, kk=+$('kk').value, own=+$('own').value;
+  $('lblHz').textContent=faDigit(hz)+' سال';
+  $('lblGrow').textContent=(grow*100).toFixed(1)+'%';
+  $('lblRent').textContent=eur(rent);
+  $('lblKk').textContent=eur(kk);
+  $('lblOwn').textContent=eur(own);
+
+  const sellM=hz*12;
+  const rest=rows[sellM-1].bal;
+  const aflos=P-rest;
+  let paidTill=0, taxTill=0;
+  for(let y=1;y<=hz;y++){
+    const seg=rows.slice((y-1)*12,y*12);
+    paidTill+=seg.reduce((s,x)=>s+x.pay,0);
+    taxTill+=Math.max(0,seg.reduce((s,x)=>s+x.int,0)-ewf)*AFTREK;
+  }
+  const sale=P*Math.pow(1+grow,hz);
+  const proceeds=sale-rest-sale*SELL_PCT;
+  const costBuy=(kk+paidTill+own*sellM)-(taxTill+proceeds);
+  // rent total with 3%/yr increase
+  let rentTot=0, rr=rent;
+  for(let y=0;y<hz;y++){rentTot+=rr*12; rr*=(1+RENT_GROW);}
+
+  setVal('oSale',eur(sale));
+  setVal('oRest',eur(rest));
+  setVal('oOver',eur(proceeds));
+  $('oOver').className='v '+(proceeds<0?'bad':'good');
+  setVal('oAflos',eur(aflos));
+  setVal('oCostBuy',eur(costBuy));
+  setVal('oCostRent',eur(rentTot));
+
+  const diff=rentTot-costBuy; // positive => buying cheaper
+  const v=$('verdict');
+  const vhtml = diff>=0
+    ? `✅ در این سناریو، خرید حدود <b>${eur(diff)}</b> ارزان‌تر از اجاره در ${faDigit(hz)} سال است`+(proceeds<0?'<br><span style="font-size:12px">⚠️ ولی سود فروش منفی است: بعد از فروش بدهکار می‌مانید.</span>':'')
+    : `❌ در این سناریو، خرید حدود <b>${eur(-diff)}</b> گران‌تر از اجاره در ${faDigit(hz)} سال درمی‌آید`+(proceeds<0?'<br><span style="font-size:12px">⚠️ سود فروش منفی است: بعد از فروش بدهکار می‌مانید (restschuld).</span>':'');
+  const flash = !initial && v.getAttribute('data-p')!==vhtml;
+  v.setAttribute('data-p',vhtml);
+  v.innerHTML=vhtml;
+  v.className='verdict '+(diff>=0?'good':'bad');
+  if(flash){ void v.offsetWidth; v.classList.add('flash'); }
+}
+
+$('typeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;type=b.dataset.t;[...$('typeSeg').children].forEach(x=>x.classList.toggle('on',x===b));render();});
+$('viewSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.v;[...$('viewSeg').children].forEach(x=>x.classList.toggle('on',x===b));render();});
+$('taxSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;AFTREK=+b.dataset.a;[...$('taxSeg').children].forEach(x=>x.classList.toggle('on',x===b));render();});
+['loan','rate','term','woz','hz','grow','rent','kk','own'].forEach(id=>$(id).addEventListener('input',render));
+render();
+initial=false;
+</script>
+</body>
+</html>
